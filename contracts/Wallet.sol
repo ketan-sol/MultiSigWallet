@@ -24,18 +24,22 @@ contract Wallet {
 
     modifier onlyOwner() {
         require(isOwner[msg.sender], "not owner");
+        _;
     }
 
     modifier trxExists(uint256 trxId) {
         require((trxId < transactions.length), "transaction does not exist");
+        _;
     }
 
     modifier notApproved(uint256 trxId) {
         require(!approved[trxId][msg.sender], "transaction already approved");
+        _;
     }
 
     modifier notExecuted(uint256 trxId) {
         require(!transactions[trxId].executed, "transaction already executed");
+        _;
     }
 
     constructor(address[] memory _owners, uint256 approvalsRequired) {
@@ -45,10 +49,10 @@ contract Wallet {
             "number of approvals required cannot be 0 and should be less than number of owners"
         );
 
-        for (i; i < _owners.length; i++) {
+        for (uint256 i; i < _owners.length; i++) {
             address owner = _owners[i];
             require(owner != address(0), "owner address cannot be 0");
-            require(!isOwner(owner), "owner already exits");
+            require(!isOwner[owner], "owner already exits");
 
             isOwner[owner] = true;
             owners.push(owner);
@@ -88,7 +92,7 @@ contract Wallet {
         view
         returns (uint256 count)
     {
-        for (i; i < owners.length; i++) {
+        for (uint256 i; i < owners.length; i++) {
             if (approved[trxId][owners[i]]) {
                 count = count + 1;
             }
